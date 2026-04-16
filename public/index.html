@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upwork OS — Nitin Sapra</title>
+<style>
+  :root {
+    --bg: #09090b; --bg2: #111114; --bg3: #18181d; --bg4: #1f1f26;
+    --border: rgba(255,255,255,0.06); --border2: rgba(255,255,255,0.11);
+    --text: #e8e8ea; --text2: #8a8a96; --text3: #52525e;
+    --accent: #6c5ce7; --accent2: #a29bfe; --accent-bg: rgba(108,92,231,0.1); --accent-border: rgba(108,92,231,0.25);
+    --green: #00c896; --green-bg: rgba(0,200,150,0.08);
+    --amber: #f0b429; --amber-bg: rgba(240,180,41,0.08);
+    --red: #e05c5c; --red-bg: rgba(224,92,92,0.08);
+    --blue: #60a5fa; --blue-bg: rgba(96,165,250,0.08);
+    --r: 10px; --rl: 14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+  .shell{display:flex;flex:1;overflow:hidden}
+
+  /* Sidebar */
+  .sidebar{width:216px;min-width:216px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+  .logo{padding:20px 18px 16px;border-bottom:1px solid var(--border)}
+  .logo-mark{font-size:18px;font-weight:800;letter-spacing:-0.5px;color:var(--text)}
+  .logo-mark span{color:var(--accent2)}
+  .logo-sub{font-size:11px;color:var(--text3);margin-top:2px}
+  .nav{flex:1;overflow-y:auto;padding:10px 10px}
+  .nav-group{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;padding:12px 8px 5px}
+  .nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--text2);border:none;background:none;width:100%;text-align:left;transition:all 0.12s;margin-bottom:1px;font-family:inherit}
+  .nav-item:hover{background:var(--bg3);color:var(--text)}
+  .nav-item.active{background:var(--accent-bg);color:var(--accent2);border:1px solid var(--accent-border)}
+  .nav-icon{width:15px;height:15px;flex-shrink:0;opacity:0.6}
+  .nav-item.active .nav-icon{opacity:1}
+  .sidebar-foot{padding:14px 16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px}
+  .av{width:32px;height:32px;border-radius:50%;background:var(--accent-bg);border:1px solid var(--accent-border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--accent2);flex-shrink:0}
+  .av-name{font-size:12px;font-weight:600;color:var(--text)}
+  .av-role{font-size:10px;color:var(--text3)}
+
+  /* Main */
+  .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+  .topbar{padding:14px 28px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+  .page-title{font-size:15px;font-weight:600}
+  .page-sub{font-size:11px;color:var(--text3);margin-top:1px}
+  .topbar-right{display:flex;gap:8px;align-items:center}
+  .status-dot{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:4px 10px;border-radius:20px}
+  .dot-ok{background:var(--green-bg);color:var(--green)}
+  .dot-warn{background:var(--amber-bg);color:var(--amber)}
+  .content{flex:1;overflow-y:auto;padding:24px 28px}
+  ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+
+  /* Buttons */
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:all 0.12s;white-space:nowrap}
+  .btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:#5a4dd0}
+  .btn-secondary{background:var(--bg3);color:var(--text2);border:1px solid var(--border2)}.btn-secondary:hover{color:var(--text);background:var(--bg4)}
+  .btn-ghost{background:transparent;color:var(--text3);border:1px solid var(--border)}.btn-ghost:hover{color:var(--text);border-color:var(--border2)}
+  .btn-sm{padding:5px 12px;font-size:12px}
+  .btn:disabled{opacity:0.35;cursor:not-allowed}
+
+  /* Cards */
+  .card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:18px 20px}
+
+  /* Form */
+  textarea,input[type=text],input[type=number],select{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:inherit;font-size:13px;padding:10px 13px;width:100%;outline:none;transition:border 0.12s}
+  textarea{resize:vertical;line-height:1.65}
+  textarea:focus,input:focus,select:focus{border-color:var(--accent)}
+  label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:5px}
+  .field{margin-bottom:14px}
+  select{appearance:none;cursor:pointer}
+
+  /* Output */
+  .output-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:15px;font-size:13px;line-height:1.75;color:var(--text);white-space:pre-wrap;word-break:break-word;min-height:80px;position:relative}
+  .output-ph{color:var(--text3);font-style:italic}
+  .copy-flash{position:absolute;top:10px;right:10px;background:var(--green-bg);color:var(--green);border:1px solid rgba(0,200,150,0.25);border-radius:6px;padding:3px 9px;font-size:11px;font-weight:600;opacity:0;transition:opacity 0.2s;pointer-events:none}
+  .copy-flash.show{opacity:1}
+
+  /* Tabs */
+  .tabs{display:flex;gap:2px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:3px;width:fit-content}
+  .tab{padding:6px 14px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;color:var(--text3);border:none;background:none;font-family:inherit;transition:all 0.12s}
+  .tab.active{background:var(--bg4);color:var(--text)}
+  .tab:hover:not(.active){color:var(--text2)}
+
+  /* Grid */
+  .g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+  .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+
+  /* Stats */
+  .stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px}
+  .stat-val{font-size:26px;font-weight:800;letter-spacing:-1px}
+  .stat-label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-top:2px}
+
+  /* Pages */
+  .page{display:none}.page.active{display:block}
+
+  /* Section label */
+  .slabel{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .slabel::after{content:'';flex:1;height:1px;background:var(--border)}
+  hr{border:none;border-top:1px solid var(--border);margin:16px 0}
+
+  /* Lead card */
+  .lead-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px;margin-bottom:10px;transition:border 0.12s}
+  .lead-card:hover{border-color:var(--border2)}
+
+  /* Badge */
+  .badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:0.03em}
+  .b-green{background:var(--green-bg);color:var(--green)}
+  .b-amber{background:var(--amber-bg);color:var(--amber)}
+  .b-red{background:var(--red-bg);color:var(--red)}
+  .b-purple{background:var(--accent-bg);color:var(--accent2)}
+  .b-blue{background:var(--blue-bg);color:var(--blue)}
+
+  /* Spinner */
+  .spin{width:14px;height:14px;border:2px solid rgba(255,255,255,0.1);border-top-color:var(--accent2);border-radius:50%;animation:spin 0.65s linear infinite;flex-shrink:0}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+  .cursor::after{content:'▍';font-size:0.8em;animation:blink 0.75s step-end infinite;color:var(--accent2)}
+
+  /* Convo */
+  .convo-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);display:flex;flex-direction:column;height:440px;overflow:hidden}
+  .msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+  .msg{display:flex;gap:8px}
+  .msg-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;margin-top:2px}
+  .msg-user .msg-av{background:var(--accent-bg);color:var(--accent2);border:1px solid var(--accent-border)}
+  .msg-ai .msg-av{background:var(--green-bg);color:var(--green);border:1px solid rgba(0,200,150,0.2)}
+  .msg-bubble{background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:9px 13px;font-size:13px;line-height:1.7;white-space:pre-wrap;word-break:break-word}
+  .msg-user .msg-bubble{background:var(--accent-bg);border-color:var(--accent-border)}
+  .convo-bar{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--border)}
+  .convo-bar input{flex:1}
+
+  /* Tracker table */
+  .tbl{width:100%;border-collapse:collapse;font-size:12px}
+  .tbl th{text-align:left;padding:8px 12px;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;border-bottom:1px solid var(--border)}
+  .tbl td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:middle}
+  .tbl tr:hover td{background:var(--bg3)}
+
+  /* Checklist */
+  .chk-item{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--border)}
+  .chk-item:last-child{border:none}
+  .chk-icon{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;margin-top:1px;font-weight:700}
+  .ci-ok{background:var(--green-bg);color:var(--green)}
+  .ci-warn{background:var(--amber-bg);color:var(--amber)}
+  .ci-bad{background:var(--red-bg);color:var(--red)}
+
+  /* Toast */
+  .toast{position:fixed;bottom:20px;right:20px;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:10px 16px;font-size:13px;z-index:999;transform:translateY(60px);opacity:0;transition:all 0.28s cubic-bezier(0.16,1,0.3,1)}
+  .toast.show{transform:translateY(0);opacity:1}
+
+  /* Skill chips */
+  .chip{background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:3px 9px;font-size:11px;color:var(--text2)}
+
+  /* Empty */
+  .empty{text-align:center;padding:36px 16px;color:var(--text3);font-size:13px}
+  .empty-ico{font-size:26px;margin-bottom:8px}
+
+  /* Rate output */
+  .rate-big{font-size:52px;font-weight:900;letter-spacing:-3px;color:var(--text);line-height:1}
+
+  /* Step pills */
+  .step-pill{display:flex;align-items:center;gap:12px;padding:11px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:border 0.12s}
+  .step-pill:hover{border-color:var(--border2)}
+  .step-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+
+  @media(max-width:820px){.g4{grid-template-columns:1fr 1fr}.g2,.g3{grid-template-columns:1fr}.sidebar{display:none}}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ── SIDEBAR ─────────────────────────────────────────────────── -->
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-mark">Upwork<span>OS</span></div>
+    <div class="logo-sub">Nitin Sapra · CTO & Fullstack</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-group">Agents</div>
+    <button class="nav-item active" onclick="goto('dashboard')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1.5" y="1.5" width="5" height="5" rx="1.2"/><rect x="9.5" y="1.5" width="5" height="5" rx="1.2"/><rect x="1.5" y="9.5" width="5" height="5" rx="1.2"/><rect x="9.5" y="9.5" width="5" height="5" rx="1.2"/></svg>
+      Dashboard
+    </button>
+    <button class="nav-item" onclick="goto('research')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6.5" cy="6.5" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
+      Lead Research
+    </button>
+    <button class="nav-item" onclick="goto('proposal')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 6h6M5 9h4"/></svg>
+      Proposal Writer
+    </button>
+    <button class="nav-item" onclick="goto('followup')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M13 9A5.5 5.5 0 1 0 2 7v5l3-2"/><circle cx="6" cy="8" r="0.8" fill="currentColor"/><circle cx="8" cy="8" r="0.8" fill="currentColor"/><circle cx="10" cy="8" r="0.8" fill="currentColor"/></svg>
+      Follow-up
+    </button>
+    <div class="nav-group">Tools</div>
+    <button class="nav-item" onclick="goto('profile')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-5 6-5s6 1.7 6 5"/></svg>
+      Profile Audit
+    </button>
+    <button class="nav-item" onclick="goto('tracker')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4h12M2 8h8M2 12h5"/></svg>
+      Tracker
+    </button>
+    <button class="nav-item" onclick="goto('rate')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 13L6 8l3 3 3-4 2-2"/></svg>
+      Rate Calc
+    </button>
+  </nav>
+  <div class="sidebar-foot">
+    <div class="av">NS</div>
+    <div><div class="av-name">Nitin Sapra</div><div class="av-role">Top Rated · CTO</div></div>
+  </div>
+</aside>
+
+<!-- ── MAIN ───────────────────────────────────────────────────── -->
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div class="page-title" id="tb-title">Dashboard</div>
+      <div class="page-sub" id="tb-sub">Your Upwork performance at a glance</div>
+    </div>
+    <div class="topbar-right">
+      <span class="status-dot dot-ok" id="api-status">● API Connected</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="g4" style="margin-bottom:22px">
+        <div class="stat"><div class="stat-val" id="s-proposals">0</div><div class="stat-label">Proposals sent</div></div>
+        <div class="stat"><div class="stat-val" id="s-leads">0</div><div class="stat-label">Leads scored</div></div>
+        <div class="stat"><div class="stat-val">$65</div><div class="stat-label">Target rate/hr</div></div>
+        <div class="stat"><div class="stat-val">15+</div><div class="stat-label">Years exp.</div></div>
+      </div>
+      <div class="g2">
+        <div class="card">
+          <div class="slabel">Workflow</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div class="step-pill" onclick="goto('research')"><div class="step-num" style="background:var(--accent-bg);color:var(--accent2);border:1px solid var(--accent-border)">1</div><div><div style="font-size:13px;font-weight:500">Research & Score Leads</div><div style="font-size:11px;color:var(--text3)">Paste listings → scored leads + unique openers</div></div></div>
+            <div class="step-pill" onclick="goto('proposal')"><div class="step-num" style="background:var(--green-bg);color:var(--green);border:1px solid rgba(0,200,150,0.2)">2</div><div><div style="font-size:13px;font-weight:500">Write Proposal</div><div style="font-size:11px;color:var(--text3)">Opener + deliverables → 200-word proposal in your voice</div></div></div>
+            <div class="step-pill" onclick="goto('followup')"><div class="step-num" style="background:var(--amber-bg);color:var(--amber);border:1px solid rgba(240,180,41,0.2)">3</div><div><div style="font-size:13px;font-weight:500">Manage Replies</div><div style="font-size:11px;color:var(--text3)">Client message → qualify / reply / book meeting</div></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="slabel">Your Stack</div>
+          <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px">
+            ${['Next.js 14','React','Node.js','TypeScript','Supabase','PostgreSQL','Prisma','MongoDB','Stripe','Tailwind','React Native','Flutter','Vercel','AWS','Redis','WebSockets'].map(t=>`<span class="chip">${t}</span>`).join('')}
+          </div>
+          <div class="slabel">Portfolio</div>
+          <div style="font-size:12px;color:var(--text2);display:flex;flex-direction:column;gap:6px">
+            ${[['NeuroDiversión','Multi-tenant SaaS · Next.js 14 · Supabase · Stripe','accent2'],['Skyltly','Digital signage SaaS · Node.js · TypeScript','blue'],['PerennialMath','Real-time WebSockets · SonarCloud · ESLint','green'],['TOGENO','Technical Lead · 4-person team · Commerce','amber'],['LimosPro','Multilingual · next-intl · 5 languages','red']].map(([n,d,c])=>`<div style="display:flex;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)"><div style="width:5px;height:5px;border-radius:50%;background:var(--${c});margin-top:5px;flex-shrink:0"></div><div><span style="font-weight:600;color:var(--text)">${n}</span><br><span style="font-size:11px;color:var(--text3)">${d}</span></div></div>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESEARCH -->
+    <div class="page" id="page-research">
+      <div class="g2">
+        <div>
+          <div class="field"><label>Paste job listing(s) — up to 10 at once</label><textarea id="r-input" rows="10" placeholder="Paste full Upwork job posting here. Include title, description, budget, client info..."></textarea></div>
+          <div style="display:flex;gap:10px;margin-bottom:14px">
+            <div style="flex:1"><label>Min budget ($)</label><input type="number" id="r-minbudget" value="500"></div>
+            <div style="flex:1"><label>Min score (1–10)</label><input type="number" id="r-minscore" value="6"></div>
+          </div>
+          <button class="btn btn-primary" style="width:100%" onclick="runResearch()" id="r-btn">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6.5" cy="6.5" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
+            Analyse & Score
+          </button>
+        </div>
+        <div>
+          <div class="slabel">Scored Leads</div>
+          <div id="r-output"><div class="empty"><div class="empty-ico">🔍</div>Paste a listing and click Analyse.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROPOSAL -->
+    <div class="page" id="page-proposal">
+      <div class="g2">
+        <div>
+          <div class="field"><label>Job title</label><input type="text" id="p-title" placeholder="e.g. Full-stack Next.js developer for SaaS MVP"></div>
+          <div class="field"><label>Unique opener (from Research, or write your own)</label><textarea id="p-opener" rows="3" placeholder="e.g. The multi-role auth complexity you described is exactly what I solved for PerennialMath last quarter."></textarea></div>
+          <div class="field"><label>Specific deliverables for this job</label><textarea id="p-deliverables" rows="4" placeholder="What do they need? e.g. Supabase auth + RLS, Stripe billing, Next.js dashboard, Vercel deploy..."></textarea></div>
+          <div class="field"><label>Budget / timeline</label><input type="text" id="p-budget" placeholder="e.g. $3,000 fixed · 3 weeks"></div>
+          <button class="btn btn-primary" style="width:100%" onclick="runProposal()" id="p-btn">✍️ Generate Proposal</button>
+        </div>
+        <div>
+          <div class="slabel">Generated Proposal</div>
+          <div style="position:relative">
+            <div class="output-box" id="p-output"><span class="output-ph">Your 200-word proposal in your voice will appear here.</span></div>
+            <div class="copy-flash" id="p-flash">Copied!</div>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:8px">
+            <button class="btn btn-secondary btn-sm" onclick="copyOut('p-output','p-flash')">Copy</button>
+            <button class="btn btn-ghost btn-sm" onclick="saveTracker()">Save to Tracker</button>
+          </div>
+          <div id="p-tips"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOLLOW-UP -->
+    <div class="page" id="page-followup">
+      <div class="g2">
+        <div>
+          <div class="field"><label>Job context (what you applied for)</label><textarea id="fu-ctx" rows="3" placeholder="e.g. Applied for Next.js SaaS build. Fixed $2,500. AU startup, 5-star client."></textarea></div>
+          <div class="field"><label>Client's message</label><textarea id="fu-msg" rows="5" placeholder="Paste exactly what the client wrote..."></textarea></div>
+          <div class="field">
+            <label>Mode</label>
+            <div class="tabs">
+              <button class="tab active" id="fu-t-reply" onclick="setFuMode('reply')">Reply</button>
+              <button class="tab" id="fu-t-qualify" onclick="setFuMode('qualify')">Qualify</button>
+              <button class="tab" id="fu-t-close" onclick="setFuMode('close')">Close / Book</button>
+            </div>
+          </div>
+          <button class="btn btn-primary" style="width:100%" onclick="runFollowup()">⚡ Generate Response</button>
+        </div>
+        <div>
+          <div class="slabel">AI Response — in your voice</div>
+          <div class="convo-wrap">
+            <div class="msgs" id="fu-msgs"><div class="empty" style="padding:24px 10px"><div class="empty-ico">💬</div>Paste a client message above.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFILE AUDIT -->
+    <div class="page" id="page-profile">
+      <div class="g2">
+        <div>
+          <div class="field"><label>Current headline</label><input type="text" id="pr-headline" placeholder="e.g. Full Stack Developer | React | Node.js | 5 years exp"></div>
+          <div class="field"><label>Current overview / about</label><textarea id="pr-about" rows="7" placeholder="Paste your current Upwork profile overview..."></textarea></div>
+          <div class="field"><label>Target client type</label><input type="text" id="pr-target" placeholder="e.g. US/AU SaaS startups, $5k+ projects"></div>
+          <button class="btn btn-primary" style="width:100%" onclick="runProfileAudit()" id="pr-btn">🔎 Audit & Rewrite</button>
+        </div>
+        <div>
+          <div class="slabel">Audit Report</div>
+          <div id="pr-checklist"><div class="empty"><div class="empty-ico">👤</div>Paste your profile and run the audit.</div></div>
+          <div id="pr-rewrite"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRACKER -->
+    <div class="page" id="page-tracker">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <div style="font-size:13px;color:var(--text2)" id="tr-count">0 proposals</div>
+        <button class="btn btn-ghost btn-sm" onclick="clearTracker()">Clear all</button>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <div id="tr-wrap"><div class="empty" style="padding:44px 20px"><div class="empty-ico">📋</div>No proposals yet. Generate one and save it here.</div></div>
+      </div>
+    </div>
+
+    <!-- RATE CALC -->
+    <div class="page" id="page-rate">
+      <div class="g2">
+        <div class="card">
+          <div class="slabel">Project Details</div>
+          <div class="field">
+            <label>Project type</label>
+            <select id="rt-type" onchange="calcRate()">
+              <option value="landing">Landing page / marketing site</option>
+              <option value="saas" selected>SaaS / Web app (MVP)</option>
+              <option value="api">API / Backend only</option>
+              <option value="mobile">Mobile app (React Native / Flutter)</option>
+              <option value="fullstack">Full-stack enterprise project</option>
+              <option value="audit">Code audit / consulting</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Complexity — <span id="rt-complexity-label">Medium</span></label>
+            <input type="range" id="rt-complexity" min="1" max="5" value="3" oninput="calcRate()" style="width:100%;accent-color:var(--accent);margin-top:6px">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:3px"><span>Simple</span><span>Complex</span></div>
+          </div>
+          <div class="field"><label>Estimated hours</label><input type="number" id="rt-hours" value="60" oninput="calcRate()"></div>
+          <div class="field">
+            <label>Urgency</label>
+            <div class="tabs">
+              <button class="tab active" id="urg-normal" onclick="setUrg('normal')">Normal</button>
+              <button class="tab" id="urg-fast" onclick="setUrg('fast')">Fast ×1.2</button>
+              <button class="tab" id="urg-urgent" onclick="setUrg('urgent')">Urgent ×1.5</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card" style="text-align:center;margin-bottom:14px">
+            <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px">Recommended Fixed Price</div>
+            <div class="rate-big" id="rt-price">$3,200</div>
+            <div style="font-size:12px;color:var(--text3);margin-top:6px" id="rt-range">Range $2,700 – $3,800</div>
+            <hr>
+            <div class="g2" style="gap:10px;text-align:left">
+              <div class="stat"><div class="stat-val" id="rt-hrly">$53</div><div class="stat-label">Hourly equiv.</div></div>
+              <div class="stat"><div class="stat-val" id="rt-hrs">60h</div><div class="stat-label">Est. hours</div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="slabel">Milestone Breakdown</div>
+            <div id="rt-milestones" style="font-size:13px;color:var(--text2)"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /shell -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Config ────────────────────────────────────────────────────────
+const API = '/api/claude';   // Vercel serverless proxy
+
+const NITIN = `You are an outreach agent for Nitin Sapra — full-stack developer and CTO with 15+ years experience based in India, working with international clients.
+
+PRIMARY TECH STACK: Next.js 14, React, Node.js, TypeScript, Supabase, PostgreSQL, Prisma, MongoDB, Stripe, Tailwind CSS, React Native, Flutter, Vercel, AWS.
+
+PORTFOLIO:
+- NeuroDiversión: multi-tenant SaaS assessment platform, Next.js 14, Supabase, PostgreSQL RLS, Zustand, Stripe
+- Skyltly: digital signage SaaS, multi-role hierarchy, Node.js/TypeScript/Express, Postman API testing
+- PerennialMath: real-time tournament platform, WebSockets, SonarCloud, ESLint
+- TOGENO: Technical Lead & Architect, led 4-person team, trust-based commerce
+- LimosPro: multilingual luxury booking, next-intl, 5 languages
+
+NITIN'S VOICE (always write like this):
+- Terse, direct, peer-level tone — never submissive or salesy
+- Short punchy sentences. Action verbs: "I built", "I shipped", "I led"
+- Never: "I hope", "I'd love to", "excited to", "as a seasoned developer", "great opportunity", "I noticed your post"
+- Opens with value or insight, never with "Hi, I'm Nitin"
+- Prefers fixed-price milestone structures over hourly`;
+
+// ── State ─────────────────────────────────────────────────────────
+let fuMode = 'reply', urgMode = 'normal';
+let proposals = JSON.parse(localStorage.getItem('uos_proposals') || '[]');
+let stats = { proposals: 0, leads: 0 };
+
+// ── Navigation ────────────────────────────────────────────────────
+const pages = {
+  dashboard: ['Dashboard', 'Your Upwork performance at a glance'],
+  research:  ['Lead Research Agent', 'Paste job listings → scored leads with unique openers'],
+  proposal:  ['Proposal Writer Agent', 'Generate proposals in your exact voice'],
+  followup:  ['Follow-up Agent', 'Qualify leads and manage client conversations'],
+  profile:   ['Profile Audit', 'Analyse and rewrite your Upwork profile'],
+  tracker:   ['Proposal Tracker', 'Track proposals and their status'],
+  rate:      ['Rate Calculator', 'Price your projects with confidence'],
+};
+function goto(p) {
+  document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
+  document.getElementById('page-' + p).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(x => { if (x.getAttribute('onclick')?.includes("'" + p + "'")) x.classList.add('active'); });
+  document.getElementById('tb-title').textContent = pages[p][0];
+  document.getElementById('tb-sub').textContent   = pages[p][1];
+  if (p === 'tracker') renderTracker();
+}
+
+// ── Claude API call via proxy ─────────────────────────────────────
+async function claude(system, user, onChunk) {
+  const stream = !!onChunk;
+  const res = await fetch(API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1500,
+      stream,
+      system,
+      messages: [{ role: 'user', content: user }]
+    })
+  });
+  if (!res.ok) { const e = await res.json().catch(() => ({})); toast('Error: ' + (e.error?.message || res.status)); return null; }
+  if (!stream) { const d = await res.json(); return d.content[0].text; }
+  const reader = res.body.getReader(); const dec = new TextDecoder(); let full = '';
+  while (true) {
+    const { done, value } = await reader.read(); if (done) break;
+    for (const line of dec.decode(value).split('\n')) {
+      if (!line.startsWith('data:')) continue;
+      try { const d = JSON.parse(line.slice(5)); if (d.type === 'content_block_delta') { full += d.delta.text; onChunk(full); } } catch {}
+    }
+  }
+  return full;
+}
+
+// ── Research Agent ────────────────────────────────────────────────
+async function runResearch() {
+  const input = document.getElementById('r-input').value.trim();
+  if (!input) { toast('Paste a job listing first'); return; }
+  const minB = +document.getElementById('r-minbudget').value || 500;
+  const minS = +document.getElementById('r-minscore').value || 6;
+  const btn = document.getElementById('r-btn');
+  btn.disabled = true; btn.innerHTML = '<div class="spin"></div> Analysing...';
+  const out = document.getElementById('r-output');
+  out.innerHTML = '<div class="empty"><div class="spin" style="margin:0 auto 10px"></div>Scoring leads...</div>';
+
+  const sys = `${NITIN}
+
+ROLE: Lead Research Agent. Analyse Upwork job postings and return structured JSON.
+
+SCORE EACH LEAD 1–10 based on:
+- Budget fit: fixed $${minB}+ or hourly $30+/hr scores high
+- Tech match: Next.js, React, Node, Supabase, PostgreSQL, MongoDB, Stripe, TypeScript, React Native, Flutter
+- Client quality: payment verified, hire rate >40%, clear brief, good reviews
+- Scope fit: SaaS, multi-tenant, full-stack, API, auth, payments, dashboards, mobile apps
+
+DISQUALIFY (score 1–2) if: budget < $${minB} fixed / < $20 hourly, vague brief, no tech stack mentioned, Asia-exclusion note.
+
+UNIQUE OPENER (for each lead score ≥ ${minS}):
+- Reference something SPECIFIC from their posting — a phrase they used, their exact pain point, their tech choice
+- Never start with "I" or "Hi" or "I noticed"
+- Peer-level, direct, max 2 sentences
+
+Return ONLY valid JSON array, no markdown fences:
+[{"title":"...","score":7,"budget":"$2,000 fixed","action":"Apply|Skip|Apply with caveat","tech_match":["Next.js","Supabase"],"red_flags":[],"rationale":"2 sentence score reasoning","opener":"unique opener text"}]`;
+
+  try {
+    const raw = await claude(sys, 'Job listing(s):\n\n' + input);
+    if (!raw) { btn.disabled = false; btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6.5" cy="6.5" r="4.5"/><path d="M10.5 10.5L14 14"/></svg> Analyse & Score'; return; }
+    let leads;
+    try { leads = JSON.parse(raw.replace(/```json|```/g, '').trim()); } catch { leads = [{ title: 'Parse error', score: 0, budget: '?', action: 'Skip', tech_match: [], red_flags: ['Could not parse AI response'], rationale: raw.slice(0, 200), opener: '' }]; }
+    if (!Array.isArray(leads)) leads = [leads];
+    leads = leads.filter(l => l.score >= minS);
+    stats.leads += leads.length;
+    document.getElementById('s-leads').textContent = stats.leads;
+    renderLeads(leads, out);
+  } catch (e) { out.innerHTML = `<div class="output-box">${e.message}</div>`; }
+  btn.disabled = false; btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6.5" cy="6.5" r="4.5"/><path d="M10.5 10.5L14 14"/></svg> Analyse & Score';
+}
+
+function renderLeads(leads, container) {
+  if (!leads.length) { container.innerHTML = '<div class="empty"><div class="empty-ico">😐</div>No leads met your minimum score. Try lowering the threshold.</div>'; return; }
+  container.innerHTML = leads.map(l => {
+    const col = l.score >= 8 ? 'var(--green)' : l.score >= 6 ? 'var(--amber)' : 'var(--red)';
+    const ab = l.action === 'Apply' ? 'b-green' : l.action === 'Skip' ? 'b-red' : 'b-amber';
+    const techs = (l.tech_match || []).map(t => `<span class="chip" style="font-size:10px;padding:2px 7px">${t}</span>`).join('');
+    const flags = (l.red_flags || []).length ? `<div style="font-size:11px;color:var(--red);margin-top:6px">⚠ ${(l.red_flags || []).join(' · ')}</div>` : '';
+    const opener = l.opener ? `<div style="font-size:12px;color:var(--accent2);background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:7px;padding:10px 12px;margin-top:10px;line-height:1.65">💬 ${esc(l.opener)}</div>` : '';
+    const applyBtn = l.action !== 'Skip' ? `<button class="btn btn-primary btn-sm" onclick='toProposal(${JSON.stringify(l).replace(/'/g,"&#39;")})'>Write Proposal →</button>` : '';
+    return `<div class="lead-card">
+      <div style="display:flex;gap:12px;margin-bottom:8px">
+        <div style="text-align:center;flex-shrink:0;padding-top:2px"><div style="font-size:24px;font-weight:900;color:${col};line-height:1">${l.score}</div><div style="font-size:9px;color:var(--text3)">/10</div></div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:5px">${esc(l.title || 'Untitled')}</div>
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="badge ${ab}">${l.action}</span><span style="font-size:11px;color:var(--text3)">${esc(l.budget || '?')}</span></div>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">${techs}</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.6">${esc(l.rationale || '')}</div>
+      ${flags}${opener}
+      <div style="display:flex;gap:6px;margin-top:10px">${applyBtn}<button class="btn btn-ghost btn-sm" onclick="copyTxt(${JSON.stringify(l.opener || '')})">Copy opener</button></div>
+    </div>`;
+  }).join('');
+}
+
+function toProposal(l) {
+  document.getElementById('p-title').value = l.title || '';
+  document.getElementById('p-opener').value = l.opener || '';
+  goto('proposal');
+  toast('Lead loaded into Proposal Writer ✓');
+}
+
+// ── Proposal Agent ────────────────────────────────────────────────
+async function runProposal() {
+  const title = document.getElementById('p-title').value.trim();
+  const opener = document.getElementById('p-opener').value.trim();
+  const delivs = document.getElementById('p-deliverables').value.trim();
+  const budget = document.getElementById('p-budget').value.trim();
+  if (!title && !delivs) { toast('Add job title or deliverables'); return; }
+  const btn = document.getElementById('p-btn');
+  btn.disabled = true; btn.textContent = 'Generating...';
+  const out = document.getElementById('p-output');
+  out.textContent = ''; out.classList.add('cursor');
+
+  const sys = `${NITIN}
+
+ROLE: Proposal Writer Agent. Write a concise Upwork proposal in Nitin's exact voice.
+
+STRUCTURE (strictly follow):
+1. Opening line(s): use the provided opener verbatim, or craft a specific one if none given
+2. One short proof paragraph (2–3 sentences): relevant experience + 1 specific past project that matches
+3. Bullet list (3–4 items): SPECIFIC deliverables for THIS job, not generic capabilities
+4. Closing (1–2 sentences): propose a quick discovery call + fixed-price milestone structure
+
+HARD RULES:
+- Total: 170–220 words. Not more.
+- Never use: "excited", "passionate", "I'd love to", "great opportunity", "I noticed", "as a seasoned"
+- No subject line, no greeting like "Hi there", no "Best regards"
+- Output proposal text ONLY — no labels, no commentary`;
+
+  const user = `Job: ${title}\nOpener: ${opener || '(generate a specific one)'}\nDeliverables: ${delivs || '(infer from job title)'}\nBudget/timeline: ${budget || 'not specified'}`;
+
+  await claude(sys, user, t => { out.textContent = t; out.classList.add('cursor'); });
+  out.classList.remove('cursor');
+  btn.disabled = false; btn.textContent = '✍️ Generate Proposal';
+  stats.proposals++; document.getElementById('s-proposals').textContent = stats.proposals;
+  document.getElementById('p-tips').innerHTML = `<div class="card" style="margin-top:12px;padding:12px 14px;font-size:12px;color:var(--text2)"><div style="font-weight:600;color:var(--text);margin-bottom:6px">Before sending</div><div>✓ Under 220 words &nbsp; ✓ Swap [Calendly link] with yours &nbsp; ✓ Add 1 question to invite a reply</div></div>`;
+}
+
+// ── Follow-up Agent ───────────────────────────────────────────────
+function setFuMode(m) {
+  fuMode = m;
+  ['reply', 'qualify', 'close'].forEach(x => document.getElementById('fu-t-' + x).classList.toggle('active', x === m));
+}
+
+async function runFollowup() {
+  const ctx = document.getElementById('fu-ctx').value.trim();
+  const msg = document.getElementById('fu-msg').value.trim();
+  if (!msg) { toast('Paste the client message'); return; }
+  const msgsEl = document.getElementById('fu-msgs');
+  if (msgsEl.querySelector('.empty')) msgsEl.innerHTML = '';
+  msgsEl.innerHTML += `<div class="msg msg-user"><div class="msg-av">CL</div><div class="msg-bubble">${esc(msg)}</div></div>`;
+  msgsEl.innerHTML += `<div class="msg msg-ai" id="ai-wrap"><div class="msg-av">NS</div><div class="msg-bubble cursor" id="ai-bub">…</div></div>`;
+  msgsEl.scrollTop = msgsEl.scrollHeight;
+
+  const instructions = {
+    reply: 'Write a direct, confident reply in 2–4 sentences. Answer what they asked. If vague, ask exactly ONE clarifying question. Be brief.',
+    qualify: 'Qualify this lead with a conversational reply. Surface any gaps: Is budget confirmed? Are they the decision maker? Is scope defined? Timeline realistic? Ask the most important missing question, naturally.',
+    close: 'Write a closing message. Confirm value match, propose a specific 20-minute discovery call this week, and mention you work on fixed-price milestones. Include [Calendly link] placeholder. Keep it tight — 3–5 sentences max.',
+  };
+
+  const sys = `${NITIN}\n\nROLE: Follow-up Agent — Mode: ${fuMode.toUpperCase()}\n\n${instructions[fuMode]}\n\nJob context: ${ctx || 'not provided'}\n\nOutput ONLY the reply text. No labels, no "Here is my response:".`;
+  const bub = document.getElementById('ai-bub');
+  bub.textContent = '';
+  await claude(sys, 'Client message:\n\n' + msg, t => { bub.textContent = t; bub.classList.add('cursor'); msgsEl.scrollTop = msgsEl.scrollHeight; });
+  bub.classList.remove('cursor');
+}
+
+// ── Profile Audit ─────────────────────────────────────────────────
+async function runProfileAudit() {
+  const headline = document.getElementById('pr-headline').value.trim();
+  const about    = document.getElementById('pr-about').value.trim();
+  const target   = document.getElementById('pr-target').value.trim() || 'US/AU SaaS startups, $5k+ projects';
+  if (!headline && !about) { toast('Paste your profile info first'); return; }
+  const btn = document.getElementById('pr-btn');
+  btn.disabled = true; btn.textContent = 'Auditing...';
+  const chk = document.getElementById('pr-checklist');
+  chk.innerHTML = '<div class="empty"><div class="spin" style="margin:0 auto 10px"></div>Analysing...</div>';
+
+  const sys = `You are an Upwork profile conversion expert. Target client: ${target}.
+
+Audit the profile and return ONLY valid JSON, no markdown:
+{
+  "score": 1-10,
+  "checks": [
+    {"label":"Headline clarity","status":"ok|warn|bad","note":"specific feedback"},
+    {"label":"Keyword optimisation","status":"ok|warn|bad","note":"specific feedback"},
+    {"label":"Social proof","status":"ok|warn|bad","note":"specific feedback"},
+    {"label":"Niche clarity","status":"ok|warn|bad","note":"specific feedback"},
+    {"label":"Call to action","status":"ok|warn|bad","note":"specific feedback"},
+    {"label":"First-impression hook","status":"ok|warn|bad","note":"specific feedback"}
+  ],
+  "new_headline": "rewritten headline max 90 chars, specific not generic",
+  "new_about": "rewritten 3–5 sentence overview in Nitin's direct terse voice, targeting ${target}, starts with a bold value statement not an intro"
+}`;
+
+  try {
+    const raw = await claude(sys, `Headline: ${headline}\n\nAbout:\n${about}`);
+    if (!raw) { btn.disabled = false; btn.textContent = '🔎 Audit & Rewrite'; return; }
+    const d = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    const col = d.score >= 8 ? 'var(--green)' : d.score >= 5 ? 'var(--amber)' : 'var(--red)';
+    chk.innerHTML = `
+      <div style="display:flex;align-items:center;gap:16px;padding:14px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;margin-bottom:14px">
+        <div style="text-align:center"><div style="font-size:36px;font-weight:900;color:${col};line-height:1">${d.score}</div><div style="font-size:9px;color:var(--text3)">/10</div></div>
+        <div style="font-size:13px;color:var(--text2)">Profile score — ${d.score >= 8 ? 'Strong' : d.score >= 5 ? 'Needs work' : 'Weak'}. See checks for fixes.</div>
+      </div>
+      ${(d.checks || []).map(c => `<div class="chk-item"><div class="chk-icon ci-${c.status === 'ok' ? 'ok' : c.status === 'warn' ? 'warn' : 'bad'}">${c.status === 'ok' ? '✓' : c.status === 'warn' ? '!' : '✗'}</div><div><div style="font-size:12px;font-weight:600;color:var(--text)">${c.label}</div><div style="font-size:12px;color:var(--text2)">${c.note}</div></div></div>`).join('')}`;
+    document.getElementById('pr-rewrite').innerHTML = `
+      <div class="slabel" style="margin-top:20px">Rewritten Profile</div>
+      ${d.new_headline ? `<div style="margin-bottom:12px"><label>New headline</label><div class="output-box" style="cursor:pointer" onclick="copyTxt(${JSON.stringify(d.new_headline)})" title="Click to copy">${esc(d.new_headline)}</div></div>` : ''}
+      ${d.new_about ? `<div><label>New overview</label><div class="output-box" style="cursor:pointer" onclick="copyTxt(${JSON.stringify(d.new_about)})" title="Click to copy">${esc(d.new_about)}</div><div style="font-size:11px;color:var(--text3);margin-top:5px">Click to copy</div></div>` : ''}`;
+  } catch (e) { chk.innerHTML = `<div class="output-box">${e.message}</div>`; }
+  btn.disabled = false; btn.textContent = '🔎 Audit & Rewrite';
+}
+
+// ── Tracker ───────────────────────────────────────────────────────
+function saveTracker() {
+  const text = document.getElementById('p-output').textContent.trim();
+  if (!text || text.includes('will appear here')) { toast('Generate a proposal first'); return; }
+  proposals.unshift({ id: Date.now(), title: document.getElementById('p-title').value.trim() || 'Untitled', text, status: 'Sent', date: new Date().toLocaleDateString() });
+  localStorage.setItem('uos_proposals', JSON.stringify(proposals));
+  toast('Saved to Tracker ✓');
+}
+function renderTracker() {
+  document.getElementById('tr-count').textContent = proposals.length + ' proposals';
+  const wrap = document.getElementById('tr-wrap');
+  if (!proposals.length) { wrap.innerHTML = '<div class="empty" style="padding:44px 20px"><div class="empty-ico">📋</div>No proposals yet.</div>'; return; }
+  const statuses = ['Sent', 'Viewed', 'Replied', 'Interview', 'Won', 'Lost'];
+  wrap.innerHTML = `<table class="tbl"><thead><tr><th>Job</th><th>Date</th><th>Status</th><th></th></tr></thead><tbody>${
+    proposals.map((p, i) => `<tr>
+      <td style="color:var(--text);font-weight:500;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(p.title)}</td>
+      <td style="white-space:nowrap">${p.date}</td>
+      <td><select style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;padding:3px 8px;outline:none;font-family:inherit" onchange="upStatus(${i},this.value)">${statuses.map(s => `<option${s === p.status ? ' selected' : ''}>${s}</option>`).join('')}</select></td>
+      <td style="white-space:nowrap"><button class="btn btn-ghost btn-sm" onclick="copyTxt(${JSON.stringify(p.text)})">Copy</button> <button class="btn btn-ghost btn-sm" style="color:var(--red)" onclick="delProposal(${i})">Del</button></td>
+    </tr>`).join('')
+  }</tbody></table>`;
+}
+function upStatus(i, s) { proposals[i].status = s; localStorage.setItem('uos_proposals', JSON.stringify(proposals)); }
+function delProposal(i) { proposals.splice(i, 1); localStorage.setItem('uos_proposals', JSON.stringify(proposals)); renderTracker(); }
+function clearTracker() { if (confirm('Clear all proposals?')) { proposals = []; localStorage.setItem('uos_proposals', '[]'); renderTracker(); } }
+
+// ── Rate Calculator ───────────────────────────────────────────────
+const rateBase = { landing: 1200, saas: 3000, api: 1500, mobile: 4000, fullstack: 6000, audit: 800 };
+const urgMult  = { normal: 1, fast: 1.2, urgent: 1.5 };
+const cLabels  = ['', 'Very simple', 'Simple', 'Medium', 'Complex', 'Very complex'];
+function setUrg(m) { urgMode = m; ['normal', 'fast', 'urgent'].forEach(x => document.getElementById('urg-' + x).classList.toggle('active', x === m)); calcRate(); }
+function calcRate() {
+  const type = document.getElementById('rt-type').value;
+  const cx   = parseInt(document.getElementById('rt-complexity').value);
+  const hrs  = parseInt(document.getElementById('rt-hours').value) || 60;
+  document.getElementById('rt-complexity-label').textContent = cLabels[cx];
+  const price = Math.round(rateBase[type] * (0.65 + cx * 0.15) * urgMult[urgMode] / 100) * 100;
+  const lo = Math.round(price * 0.85 / 50) * 50;
+  const hi = Math.round(price * 1.25 / 50) * 50;
+  const hrly = Math.round(price / hrs);
+  document.getElementById('rt-price').textContent = '$' + price.toLocaleString();
+  document.getElementById('rt-range').textContent = `Range $${lo.toLocaleString()} – $${hi.toLocaleString()}`;
+  document.getElementById('rt-hrly').textContent  = '$' + hrly;
+  document.getElementById('rt-hrs').textContent   = hrs + 'h';
+  const m1 = Math.round(price * 0.3 / 50) * 50;
+  const m2 = Math.round(price * 0.4 / 50) * 50;
+  const m3 = price - m1 - m2;
+  document.getElementById('rt-milestones').innerHTML = [
+    ['Milestone 1', 'Setup, architecture & core scaffold', m1],
+    ['Milestone 2', 'Features, integrations & UI', m2],
+    ['Milestone 3', 'QA, deploy & handover docs', m3],
+  ].map(([t, d, v]) => `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><div><div style="font-weight:500;color:var(--text)">${t}</div><div style="font-size:11px;color:var(--text3)">${d}</div></div><div style="font-weight:700;color:var(--text);white-space:nowrap">$${v.toLocaleString()}</div></div>`).join('');
+}
+calcRate();
+
+// ── Utilities ─────────────────────────────────────────────────────
+function copyOut(id, flashId) {
+  copyTxt(document.getElementById(id).textContent);
+  const f = document.getElementById(flashId); f.classList.add('show'); setTimeout(() => f.classList.remove('show'), 2000);
+}
+function copyTxt(t) {
+  navigator.clipboard.writeText(t).catch(() => { const ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); });
+  toast('Copied ✓');
+}
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function toast(msg) {
+  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>
